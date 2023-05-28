@@ -1,7 +1,7 @@
-# пакеты Python, которые необходимо установить перед запуском приложения
 diffusers
-torch
-streamlit
 transformers
-imageio
+scipy
+ftfy
 accelerate
+safetensors
+gradio
