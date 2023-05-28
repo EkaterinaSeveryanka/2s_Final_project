@@ -1,8 +1,10 @@
 from diffusers import StableDiffusionPipeline
 import torch
 import streamlit as st
+from PIL import Image
 import imageio
 import accelerate
+
 
 # model_id = "runwayml/stable-diffusion-v1-5"
 # pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
