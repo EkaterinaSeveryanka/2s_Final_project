@@ -25,17 +25,13 @@ def load_model():
 pipe = load_model()
 
 # Отображение формы загрузки пользовательской картинки
-st.set_option('deprecation.showfileUploaderEncoding', False)
-uploaded_file = st.file_uploader("Загрузите файл в формате PNG или JPG", type=["png", "jpg"])
+image_1 = model_id.text_to_image("photograph of an astronaut riding a banana with old dragon", batch_size=3)
+
 
 # Получение предсказания при помощи модели
-if uploaded_file is not None:
-    image = imageio.imread(uploaded_file)
-    st.image(output_image.astype('uint8'), caption='Обработанное изображение', use_column_width=True)
-
-    with st.spinner("Идет обработка..."):
-        input_image = torch.tensor([torch.tensor(image)])
-        prompt = "a photo of an astronaut riding a horse on mars"
-        output_image = pipe(prompt, init_image=input_image, num_images=1).images[0]
-
-        st.image(output_image, caption='Обработанное изображение', use_column_width=True)
+def plot_images(images):
+    plt.figure(figsize=(20, 20))
+    for i in range(len(images)):
+        ax = plt.subplot(1, len(images), i + 1)
+        plt.imshow(images[i])
+        plt.axis("off")
