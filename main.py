@@ -1,43 +1,45 @@
+import os
+from pathlib import Path
+
+import gradio as gr
 from diffusers import StableDiffusionPipeline
-import torch
-import streamlit as st
-from PIL import Image
-import imageio
-import accelerate
+from huggingface_hub import snapshot_download
+
+model_name = "runwayml/stable-diffusion-v1-5"
+
+local_dir = f"./models/{model_name}"
+if not Path(local_dir).exists() or len(os.listdir(local_dir)) == 0:
+    snapshot_download(model_name, local_dir=local_dir, local_dir_use_symlinks=False)
+
+pipe = StableDiffusionPipeline.from_pretrained(f"./models/{model_name}", device_map="auto", local_files_only=True)
+
+theme = gr.themes.Monochrome(
+    primary_hue="indigo",
+    secondary_hue="blue",
+    neutral_hue="slate",
+    radius_size=gr.themes.sizes.radius_sm,
+    font=[gr.themes.GoogleFont("Open Sans"), "ui-sans-serif", "system-ui", "sans-serif"],
+)
+
+with gr.Blocks(theme=theme) as demo:
+    def infer(prompt):
+        return pipe([prompt]).images
 
 
-# model_id = "runwayml/stable-diffusion-v1-5"
-# pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
-# pipe = pipe.to("cuda")
-#
-# prompt = "a photo of an astronaut riding a horse on mars"
-# image = pipe(prompt).images[0]
-#
-# image.save("astronaut_rides_horse.png")
+    with gr.Row():
+        text = gr.Textbox(
+            show_label=False,
+            max_lines=1,
+            placeholder="Enter your prompt",
+        ).style(container=False)
+        btn = gr.Button("Generate image").style(full_width=False)
 
-# Загрузка модели
-@st.cache(allow_output_mutation=True)
-def load_model():
-    model_id = "runwayml/stable-diffusion-v1-5"
-    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
-    pipe = pipe.to("cuda")
-    return pipe
+    gallery = gr.Gallery(
+        show_label=False
+    ).style(columns=[2], height="auto")
 
+    text.submit(infer, inputs=text, outputs=[gallery])
+    btn.click(infer, inputs=text, outputs=[gallery])
 
-pipe = load_model()
-
-# Отображение формы загрузки пользовательской картинки
-st.set_option('deprecation.showfileUploaderEncoding', False)
-uploaded_file = st.sidebar.file_uploader(label="Загрузите файл в формате PNG или JPG", type=["png", "jpg"])
-
-# Получение предсказания при помощи модели
-if uploaded_file is not None:
-    image = imageio.imread(uploaded_file)
-    st.image(output_image.astype('uint8'), caption='Обработанное изображение', use_column_width=True)
-
-    with st.spinner("Идет обработка..."):
-        input_image = torch.tensor([torch.tensor(image)])
-        prompt = "a photo of an astronaut riding a horse on mars"
-        output_image = pipe(prompt, init_image=input_image, num_images=1).images[0]
-
-        st.image(output_image, caption='Обработанное изображение', use_column_width=True)
+if __name__ == "__main__":
+    demo.launch(server_name="0.0.0.0")
