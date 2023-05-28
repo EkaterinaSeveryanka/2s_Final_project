@@ -26,7 +26,7 @@ pipe = load_model()
 
 # Отображение формы загрузки пользовательской картинки
 st.set_option('deprecation.showfileUploaderEncoding', False)
-uploaded_file = st.file_uploader("Загрузите файл в формате PNG или JPG", type=["png", "jpg"])
+uploaded_file = st.sidebar.file_uploader(label="Загрузите файл в формате PNG или JPG", type=["png", "jpg"])
 
 # Получение предсказания при помощи модели
 if uploaded_file is not None:
