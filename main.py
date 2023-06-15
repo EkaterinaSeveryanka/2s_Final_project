@@ -3,6 +3,7 @@ import torch
 import streamlit as st
 from PIL import Image
 
+
 # model_id = "runwayml/stable-diffusion-v1-5"
 # pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
 # pipe = pipe.to("cuda")
@@ -17,7 +18,7 @@ from PIL import Image
 def load_model():
     model_id = "runwayml/stable-diffusion-v1-5"
     pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
-    pipe = pipe.to("cuda")
+    pipe = pipe.to("cpu")
     return pipe
 
 

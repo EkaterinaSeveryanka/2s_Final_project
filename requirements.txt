@@ -3,3 +3,4 @@ from diffusers import StableDiffusionPipeline
 import torch
 import streamlit as st
 from PIL import Image
+from fastapi import FastAPI
